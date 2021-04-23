@@ -12,4 +12,9 @@ namespace mcZen.Data
 		int Execute();
 		void Initialize(Microsoft.Data.SqlClient.SqlConnection conn, Microsoft.Data.SqlClient.SqlTransaction trans);
 	}
+
+	public interface IRequestAsync : IRequest
+	{
+		System.Threading.Tasks.Task<int> ExecuteAsync(System.Threading.CancellationToken cancellationToken);
+	}
 }

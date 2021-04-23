@@ -9,10 +9,19 @@
     <Description>Command based sql queries</Description>
     <PackageProjectUrl>https://github.com/michaelmcdaniel/mcZen.Data</PackageProjectUrl>
     <RepositoryUrl>https://github.com/michaelmcdaniel/mcZen.Data</RepositoryUrl>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <Copyright>Copyright 2004</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

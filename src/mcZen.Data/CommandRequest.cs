@@ -7,7 +7,7 @@ namespace mcZen.Data
 	/// <summary>
 	/// Summary description for CommandRequest
 	/// </summary>
-	public class CommandRequest : IRequest
+	public class CommandRequest : IRequestAsync
 	{
 		private SqlCommand _Cmd = null;
 		public CommandRequest(string query, params SqlParameter[] parameters) : this(query, CommandType.Text, parameters)
@@ -46,6 +46,17 @@ namespace mcZen.Data
 			try
 			{
 				return _Cmd.ExecuteNonQuery();
+			}
+			catch (Exception ex)
+			{
+				throw new RequestException(_Cmd, ex);
+			}
+		}
+		public virtual async System.Threading.Tasks.Task<int> ExecuteAsync(System.Threading.CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await _Cmd.ExecuteNonQueryAsync(cancellationToken);
 			}
 			catch (Exception ex)
 			{

@@ -35,7 +35,7 @@ namespace mcZen.Data
 			_Obj = defaultValue;
 		}
 
-		protected override bool Read(Microsoft.Data.SqlClient.SqlDataReader reader)
+		protected override System.Threading.Tasks.Task<bool> Read(Microsoft.Data.SqlClient.SqlDataReader reader)
 		{
 			if (!reader.IsDBNull(0))
 			{
@@ -44,7 +44,7 @@ namespace mcZen.Data
 			Action<T> d = OnValue;
 			if (d != null) d(_Obj);
 				
-			return false;
+			return System.Threading.Tasks.Task.FromResult(false);
 		}
 
         public T Value {
