@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.5.0</Version>
+    <Authors>Michael McDaniel</Authors>
+    <Product>mcZen.Data</Product>
+    <Description>Command based sql queries</Description>
+    <PackageProjectUrl>https://github.com/michaelmcdaniel/mcZen.Data</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/michaelmcdaniel/mcZen.Data</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.0" />
+  </ItemGroup>
+
+</Project>
