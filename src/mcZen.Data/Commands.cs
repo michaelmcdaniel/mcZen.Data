@@ -7,9 +7,23 @@ using System.Linq;
 
 namespace mcZen.Data
 {
+	/// <summary>
+	/// Helper functions to build simple sql statements
+	/// </summary>
 	public static partial class Commands
 	{
-		public static mcZen.Data.IRequest InitializeSave(string table, int timeout, ref Guid id, SqlParameter key, params SqlParameter[] parameters)
+		/// <summary>
+		/// Creates command that uses insert or update query based on id/key with columns set from parameters.  
+		/// If id equals Empty Guid, then the key/id is set to Guid.NewGuid() and the values are inserted.  
+		/// Otherwise, update is performed using the key as the where clause.
+		/// </summary>
+		/// <param name="table">The table name (no brackets)</param>
+		/// <param name="timeout">Timeout to perform the query in</param>
+		/// <param name="id">reference to id that will be set to Guid.NewGuid if it equals Guid.Empty</param>
+		/// <param name="key">The key column name</param>
+		/// <param name="parameters">Additional columns to set values for.</param>
+		/// <returns>Request to be executed using a ConnectionFactory</returns>
+		public static mcZen.Data.ICommand InitializeSave(string table, int timeout, ref Guid id, SqlParameter key, params SqlParameter[] parameters)
 		{
 			string query;
 			IEnumerable<SqlParameter> cc = parameters.Append(key);
@@ -28,21 +42,55 @@ namespace mcZen.Data
 					string.Join(",", (from p in parameters select "["+p.ParameterName.Substring(1)+"]="+p.ParameterName)), 
 					"["+key.ParameterName.Substring(1)+"]="+key.ParameterName);
 			}
-			return new Data.CommandRequest(query, CommandType.Text, timeout, cc.ToArray());
+			return new Data.Command(query, CommandType.Text, timeout, cc.ToArray());
 		}
 
-		public static mcZen.Data.IRequest Insert(string table, params SqlParameter[] parameters)
+		/// <summary>
+		/// Creates a command that will insert all the given parameters into given table
+		/// </summary>
+		/// <param name="table">Sql table name (no brackets)</param>
+		/// <param name="parameters">Columns to add to the insert</param>
+		/// <returns>Command to be executed using a ConnectionFactory</returns>
+		public static mcZen.Data.ICommand Insert(string table, params SqlParameter[] parameters)
 		{
 			string query;
 			IEnumerable<SqlParameter> cc = parameters;
-				query = string.Format("INSERT INTO [{0}] ([{1}]) VALUES ({2})",
-					table,
-					string.Join("],[", (from p in cc select p.ParameterName.Substring(1))),
-					string.Join(",", (from p in cc select p.ParameterName)));
-			return new Data.CommandRequest(query, CommandType.Text, cc.ToArray());
+			query = string.Format("INSERT INTO [{0}] ([{1}]) VALUES ({2})",
+				table,
+				string.Join("],[", (from p in cc select p.ParameterName.Substring(1))),
+				string.Join(",", (from p in cc select p.ParameterName)));
+			return new Data.Command(query, CommandType.Text, cc.ToArray());
 		}
 
-		public static mcZen.Data.IRequest InitializeSave(string table, SqlParameter key, params SqlParameter[] parameters)
+		/// <summary>
+		/// Creates a scalar command that will insert all the given parameters into given table, returning the identity column
+		/// </summary>
+		/// <param name="table">Sql table name (no brackets)</param>
+		/// <param name="parameters">Columns to add to the insert</param>
+		/// <returns>Command to be executed using a ConnectionFactory</returns>
+		public static mcZen.Data.ScalarCommand<T> Insert<T>(Action<T> setKey, string table, string keyColumn, params SqlParameter[] parameters)
+		{
+			string query;
+			IEnumerable<SqlParameter> cc = parameters;
+			if (keyColumn.StartsWith("@")) keyColumn = keyColumn.Substring(1);
+			query = string.Format("INSERT INTO [{0}] ([{1}]) OUTPUT Inserted.[{3}] VALUES ({2})",
+				table,
+				string.Join("],[", (from p in cc select p.ParameterName.Substring(1))),
+				string.Join(",", (from p in cc select p.ParameterName)),
+				keyColumn);
+			return new mcZen.Data.ScalarCommand<T>(setKey, query, cc.ToArray());
+		}
+
+		/// <summary>
+		/// Creates command that uses insert or update query based on key parameter set from parameters.  
+		/// If key value equals null, then insert command is generated (minus key column)  
+		/// Otherwise, update is performed using the key as the where clause.
+		/// </summary>
+		/// <param name="table"></param>
+		/// <param name="key"></param>
+		/// <param name="parameters"></param>
+		/// <returns>Command to be executed using a ConnectionFactory</returns>
+		public static mcZen.Data.ICommand InitializeSave(string table, SqlParameter key, params SqlParameter[] parameters)
 		{
 			string query;
 			IEnumerable<SqlParameter> cc;
@@ -62,10 +110,20 @@ namespace mcZen.Data
 					string.Join(",", (from p in parameters select "["+p.ParameterName.Substring(1)+"]="+p.ParameterName)), 
 					"["+key.ParameterName.Substring(1)+"]="+key.ParameterName);
 			}
-			return new Data.CommandRequest(query, CommandType.Text, cc.ToArray());
+			return new Data.Command(query, CommandType.Text, cc.ToArray());
 		}
 
-		public static mcZen.Data.IRequest InitializeSave(string table, ref Guid id, SqlParameter key, params SqlParameter[] parameters)
+		/// <summary>
+		/// Creates command that uses insert or update query based on id/key with columns set from parameters.  
+		/// If id equals Empty Guid, then the key/id is set to Guid.NewGuid() and the values are inserted.  
+		/// Otherwise, update is performed using the key as the where clause.
+		/// </summary>
+		/// <param name="table">The table name (no brackets)</param>
+		/// <param name="id">reference to id that will be set to Guid.NewGuid if it equals Guid.Empty</param>
+		/// <param name="key">The key column name</param>
+		/// <param name="parameters">Additional columns to set values for.</param>
+		/// <returns>Command to be executed using a ConnectionFactory</returns>
+		public static mcZen.Data.ICommand InitializeSave(string table, ref Guid id, SqlParameter key, params SqlParameter[] parameters)
 		{
 			string query;
 			IEnumerable<SqlParameter> cc;
@@ -86,100 +144,19 @@ namespace mcZen.Data
 					string.Join(",", (from p in parameters select "["+p.ParameterName.Substring(1)+"]="+p.ParameterName)), 
 					"["+key.ParameterName.Substring(1)+"]="+key.ParameterName);
 			}
-			return new Data.CommandRequest(query, CommandType.Text, cc.ToArray());
+			return new Data.Command(query, CommandType.Text, cc.ToArray());
 		}
 
-
-		public static mcZen.Data.IRequest InitializeSave(string table, out bool update, object obj, SqlParameter key, SqlParameter createDate, SqlParameter createUser, SqlParameter modDate, SqlParameter modUser, params SqlParameter[] parameters)
+		public static ICommand Delete(string table, int timeout, SqlParameter key)
 		{
-			StringBuilder query = new StringBuilder();
-			//obj.Modified.Stamp();
-			//modDate.Value = obj.Modified.DateTime;
-			//modUser.Value = obj.Modified.UserID;
-
-			List<SqlParameter> newParams = new List<SqlParameter>();
-			if (Guid.Empty.Equals(key.Value))
-			{
-				//obj.Created.Stamp(obj.Modified);
-				//createDate.Value = obj.Created.DateTime;
-				//createUser.Value = obj.Created.UserID;
-
-				update = false;
-				//obj.ID = Guid.NewGuid();
-				//key.Value = obj.ID;
-				query.Append("INSERT INTO ");
-				query.Append(table);
-				query.Append(" ([");
-				for (int i = 0; i < parameters.Length; i++)
-				{
-					newParams.Add(parameters[i]);
-					query.Append(parameters[i].ParameterName.Substring(1));
-					query.Append("],[");
-				}
-				query.Append(createDate.ParameterName.Substring(1));
-				query.Append("],[");
-				query.Append(createUser.ParameterName.Substring(1));
-				query.Append("],[");
-				query.Append(modDate.ParameterName.Substring(1));
-				query.Append("],[");
-				query.Append(modUser.ParameterName.Substring(1));
-				query.Append("],[");
-				query.Append(key.ParameterName.Substring(1));
-				query.Append("]) VALUES (");
-				for (int i = 0; i < parameters.Length; i++)
-				{
-					query.Append(parameters[i].ParameterName);
-					query.Append(',');
-				}
-				query.Append(createDate.ParameterName);
-				query.Append(',');
-				query.Append(createUser.ParameterName);
-				query.Append(',');
-				query.Append(modDate.ParameterName);
-				query.Append(',');
-				query.Append(modUser.ParameterName);
-				query.Append(',');
-				query.Append(key.ParameterName);
-				query.Append(')');
-				newParams.Add(createDate);
-				newParams.Add(createUser);
-			}
-			else
-			{
-				update = true;
-				//key.Value = obj.ID;
-				query.Append("UPDATE ");
-				query.Append(table);
-				query.Append(" SET ");
-				for (int i = 0; i < parameters.Length; i++)
-				{
-					newParams.Add(parameters[i]);
-					query.Append('[');
-					query.Append(parameters[i].ParameterName.Substring(1));
-					query.Append("]=");
-					query.Append(parameters[i].ParameterName);
-					query.Append(',');
-				}
-
-				query.Append("[");
-				query.Append(modDate.ParameterName.Substring(1));
-				query.Append("]=");
-				query.Append(modDate.ParameterName);
-				query.Append(",[");
-				query.Append(modUser.ParameterName.Substring(1));
-				query.Append("]=");
-				query.Append(modUser.ParameterName);
-				query.Append(" WHERE [");
-				query.Append(key.ParameterName.Substring(1));
-				query.Append("]=");
-				query.Append(key.ParameterName);
-			}
-			newParams.Add(modDate);
-			newParams.Add(modUser);
-			newParams.Add(key);
-
-			return new mcZen.Data.CommandRequest(query.ToString(), newParams.ToArray());
+			return new Command("DELETE FROM " + table + " WHERE " + key.ParameterName.Substring(1) + "=" + key.ParameterName, CommandType.Text, timeout, key);
 		}
+
+		public static ICommand Delete(string table, SqlParameter key)
+		{
+			return new Command("DELETE FROM " + table + " WHERE " + key.ParameterName.Substring(1) + "=" + key.ParameterName, CommandType.Text, key);
+		}
+
 
 		internal static void AppendAnd(ref bool first, System.Text.StringBuilder builder)
 		{

@@ -5,12 +5,15 @@ using Microsoft.Data.SqlClient;
 
 namespace mcZen.Data
 {
-	public class RequestException : Exception
+	/// <summary>
+	/// Exception class that includes query details
+	/// </summary>
+	public class CommandException : Exception
 	{
 		string _Query = "";
 		List<Tuple<string, string>> _Parameters = new List<Tuple<string,string>>();
 
-		public RequestException(SqlCommand cmd, Exception innerException)
+		public CommandException(SqlCommand cmd, Exception innerException)
 			: base(innerException.Message, innerException)
 		{
 			_Query = cmd.CommandText;

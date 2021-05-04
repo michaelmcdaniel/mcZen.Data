@@ -32,6 +32,10 @@ namespace mcZen.Data
 				_Direction = copy._Direction;
 			}
 
+			/// <summary>
+			/// Create Ascending sort on given column.
+			/// </summary>
+			/// <param name="column">the column name</param>
 			public Sort(string column)
 			{
 				_Column = column;
@@ -44,6 +48,9 @@ namespace mcZen.Data
 				set { _Column = value; }
 			}
 
+			/// <summary>
+			/// The direction of the sort.  Should be DESC or ASC.
+			/// </summary>
 			public string Direction
 			{
 				get { return _Direction; }
@@ -56,11 +63,20 @@ namespace mcZen.Data
 				set { _Direction = (value) ? "DESC" : "ASC"; }
 			}
 
+			/// <summary>
+			/// overridden.  returns "column direction" 
+			/// </summary>
+			/// <returns></returns>
 			public override string ToString()
 			{
 				return _Column + " " + _Direction;
 			}
 
+			/// <summary>
+			/// returns "prefix.column direction"
+			/// </summary>
+			/// <param name="prefix">given prefix to prepend to column name</param>
+			/// <returns></returns>
 			public string ToString(string prefix)
 			{
 				if (string.IsNullOrEmpty(prefix))
@@ -86,6 +102,11 @@ namespace mcZen.Data
 				return Join(sorts.ToArray());
 			}
 
+			/// <summary>
+			/// comma separates all given sorts
+			/// </summary>
+			/// <param name="sorts">list of sorts</param>
+			/// <returns>comma separated sorts</returns>
 			public static string Join(params Sort[] sorts)
 			{
 				System.Text.StringBuilder sb = new System.Text.StringBuilder();
@@ -148,6 +169,10 @@ namespace mcZen.Data
 			_Sorts = new List<Sort>();
 		}
 
+		/// <summary>
+		/// adds the given sort to the end of sort list.  (will remove it if it already exists)
+		/// </summary>
+		/// <param name="sort"></param>
 		public void Add(Sort sort)
 		{
 			// remove this sort if it already exists
@@ -157,6 +182,10 @@ namespace mcZen.Data
 			_Sorts.Add(sort);
 		}
 
+		/// <summary>
+		/// adds the given sorts to the end of sort list.  (will remove any if it already exists)
+		/// </summary>
+		/// <param name="sorts"></param>
 		public void Add(List<Sort> sorts)
 		{
 			foreach (Sort sort in sorts)
@@ -169,6 +198,11 @@ namespace mcZen.Data
 			_Sorts.AddRange(sorts);
 		}
 
+		/// <summary>
+		/// Inserts sort at specified index (will remove any if it already exists)
+		/// </summary>
+		/// <param name="index">zero based index</param>
+		/// <param name="sort">sort to add</param>
 		public void Insert(int index, Sort sort)
 		{
 			_Sorts.RemoveAll(delegate(Sort s)
@@ -178,26 +212,47 @@ namespace mcZen.Data
 			_Sorts.Insert(index, sort);
 		}
 
+		/// <summary>
+		/// The number of sorts currently housed.
+		/// </summary>
 		public int Count
 		{
 			get { return _Sorts.Count; }
 		}
 
+		/// <summary>
+		/// returns sort at given index.
+		/// </summary>
+		/// <param name="index">Zero based index</param>
+		/// <returns>Sort at specified index</returns>
 		public Sort this[int index]
 		{
 			get { return _Sorts[index]; }
 		}
 
+		/// <summary>
+		/// returns sort at index.
+		/// </summary>
+		/// <param name="index"></param>
 		public void RemoveAt(int index)
 		{
 			_Sorts.RemoveAt(index);
 		}
 
+		/// <summary>
+		/// Creates sort based on comma separated list of sorts
+		/// </summary>
+		/// <param name="existingSort">existing sort</param>
 		public OrderBy(string existingSort)
 		{
 			_Sorts = Sort.Split(existingSort);
 		}
 
+		/// <summary>
+		/// Creates sort based on comma separated list of sorts, adding to sort as primary column sort
+		/// </summary>
+		/// <param name="existingSort">existing sort</param>
+		/// <param name="newSortColumn">new column to add as primary sort</param>
 		public OrderBy(string existingSort, string newSortColumn)
 		{
 			_Sorts = Sort.Split(existingSort);
@@ -227,6 +282,12 @@ namespace mcZen.Data
 			}
 		}
 
+		/// <summary>
+		/// replace sort at given index
+		/// </summary>
+		/// <param name="index">Zero based index</param>
+		/// <param name="newColumn">new column</param>
+		/// <returns></returns>
 		public int Replace(int index, string newColumn)
 		{
 			int columnsAdded = 0;
@@ -243,6 +304,11 @@ namespace mcZen.Data
 			}
 			return columnsAdded;
 		}
+
+		/// <summary>
+		/// reverses the order of the current sort
+		/// </summary>
+		/// <returns>new Sort</returns>
 		public OrderBy Reverse()
 		{
 			OrderBy copy = new OrderBy(this);
@@ -264,6 +330,11 @@ namespace mcZen.Data
 			return Sort.Join(prefix, _Sorts);
 		}
 
+		/// <summary>
+		/// Trys to create sort from given sql statement.
+		/// </summary>
+		/// <param name="query">sql query</param>
+		/// <returns>OrderBy object of sorts</returns>
 		public static OrderBy FromQuery(string query)
 		{
 			OrderBy orderby = new OrderBy();

@@ -6,6 +6,9 @@ using Microsoft.Data.SqlClient;
 
 namespace mcZen.Data
 {
+	/// <summary>
+	/// Sql Parameter helper functions
+	/// </summary>
 	public static class Parameters
 	{
 		/// <summary>

@@ -5,15 +5,16 @@ using Microsoft.Data.SqlClient;
 namespace mcZen.Data
 {
 	/// <summary>
-	/// Summary description for CommandRequest
+	/// A simple sql query that gets executed.
 	/// </summary>
-	public class CommandRequest : IRequestAsync
+	public class Command : ICommandAsync
 	{
 		private SqlCommand _Cmd = null;
-		public CommandRequest(string query, params SqlParameter[] parameters) : this(query, CommandType.Text, parameters)
+		public Command(string query, params SqlParameter[] parameters) : this(query, CommandType.Text, parameters)
 		{
 		}
-		public CommandRequest(string query, CommandType type, params SqlParameter[] parameters)
+
+		public Command(string query, CommandType type, params SqlParameter[] parameters)
 		{
 			_Cmd = new SqlCommand(query);
 			_Cmd.CommandType = type;
@@ -21,7 +22,7 @@ namespace mcZen.Data
 				_Cmd.Parameters.AddRange(parameters);
 		}
 
-		public CommandRequest(string query, CommandType type, int timeout, params SqlParameter[] parameters)
+		public Command(string query, CommandType type, int timeout, params SqlParameter[] parameters)
 		{
 			_Cmd = new SqlCommand(query);
 			_Cmd.CommandType = type;
@@ -36,6 +37,9 @@ namespace mcZen.Data
 			_Cmd.Transaction = trans;
 		}
 
+		/// <summary>
+		/// Internal SqlCommand
+		/// </summary>
 		public SqlCommand Command
 		{
 			get { return _Cmd; }
@@ -49,7 +53,7 @@ namespace mcZen.Data
 			}
 			catch (Exception ex)
 			{
-				throw new RequestException(_Cmd, ex);
+				throw new CommandException(_Cmd, ex);
 			}
 		}
 		public virtual async System.Threading.Tasks.Task<int> ExecuteAsync(System.Threading.CancellationToken cancellationToken)
@@ -60,7 +64,7 @@ namespace mcZen.Data
 			}
 			catch (Exception ex)
 			{
-				throw new RequestException(_Cmd, ex);
+				throw new CommandException(_Cmd, ex);
 			}
 		}
 	}
