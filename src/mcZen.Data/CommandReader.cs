@@ -89,11 +89,11 @@ namespace mcZen.Data
 			SqlDataReader reader = null;
 			try
 			{
-				reader = Command.ExecuteReader();
+				reader = InternalCommand.ExecuteReader();
 			}
 			catch (SqlException ex)
 			{
-				throw new CommandException(Command, ex);
+				throw new CommandException(InternalCommand, ex);
 			}
 			_RecordsAffected = reader.RecordsAffected;
 			try
@@ -118,11 +118,11 @@ namespace mcZen.Data
 			SqlDataReader reader = null;
 			try
 			{
-				reader = await Command.ExecuteReaderAsync(cancellationToken);
+				reader = await InternalCommand.ExecuteReaderAsync(cancellationToken);
 			}
 			catch (SqlException ex)
 			{
-				throw new CommandException(Command, ex);
+				throw new CommandException(InternalCommand, ex);
 			}
 			_RecordsAffected = reader.RecordsAffected;
 			try
