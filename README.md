@@ -6,7 +6,7 @@ Simple transaction command based sql access.
 
 ```List<KeyValuePair<Guid,int>> values = new List<KeyValuePair<Guid, int>>();
 ConnectionFactory.Execute(
-    new CommandReaderRequest(
+    new CommandReader(
 	r => {
 	    values.Add(new KeyValuePair<Guid, int>(r.GetGuid(0), r.GetInt32(1)));
 	}, 
@@ -23,5 +23,6 @@ ConnectionFactory.Execute(
 ```ConnectionFactory factory = new ConnectionFactory(_options.Value.ConnectionString);
 factory.Register(mcZen.Data.Commands.Insert("[Table]", new SqlParameter("@key", Guid.NewGuid()), new SqlParameter("@value", 5)));
 factory.Register(mcZen.Data.Commands.Insert("[Table]", new SqlParameter("@key", Guid.NewGuid()), new SqlParameter("@value", 3)));
+factory.Register(mcZen.Data.Command("UPDATE [TABLE] SET [timestamp]=getutcdate()"));
 factory.Execute();'
 ```
