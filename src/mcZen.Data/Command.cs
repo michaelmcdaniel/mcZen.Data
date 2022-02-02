@@ -40,7 +40,7 @@ namespace mcZen.Data
 		/// <summary>
 		/// Internal SqlCommand
 		/// </summary>
-		public SqlCommand Command
+		public SqlCommand InternalCommand
 		{
 			get { return _Cmd; }
 		}
