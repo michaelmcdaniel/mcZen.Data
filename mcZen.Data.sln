@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mcZen.Data", "src\mcZen.Data\mcZen.Data.csproj", "{FAFC329D-CA0D-4A7C-AFE1-9407FD99B489}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mcZen.Data.Test", "test\mcZen.Data.Test\mcZen.Data.Test.csproj", "{EF778150-F580-4101-B5A2-F07A17107AF5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{FAFC329D-CA0D-4A7C-AFE1-9407FD99B489}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAFC329D-CA0D-4A7C-AFE1-9407FD99B489}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAFC329D-CA0D-4A7C-AFE1-9407FD99B489}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF778150-F580-4101-B5A2-F07A17107AF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF778150-F580-4101-B5A2-F07A17107AF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF778150-F580-4101-B5A2-F07A17107AF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF778150-F580-4101-B5A2-F07A17107AF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
