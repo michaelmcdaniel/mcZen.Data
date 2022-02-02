@@ -46,6 +46,23 @@ namespace mcZen.Data
 		}
 
 		/// <summary>
+		/// Creates a command that will update all the given parameters into given table
+		/// </summary>
+		/// <param name="table">Sql table name (no brackets)</param>
+		/// <param name="parameters">Columns to add to the insert</param>
+		/// <returns>Command to be executed using a ConnectionFactory</returns>
+		public static mcZen.Data.ICommand Update(string table, SqlParameter key, params SqlParameter[] parameters)
+		{
+			string query;
+			IEnumerable<SqlParameter> cc = parameters;
+			query = string.Format("UPDATE [{0}] SET {1} WHERE {2}",
+				table,
+				string.Join(",", (from p in parameters select "[" + p.ParameterName.Substring(1) + "]=" + p.ParameterName)),
+				"[" + key.ParameterName.Substring(1) + "]=" + key.ParameterName);
+			return new Data.Command(query, CommandType.Text, cc.ToArray());
+		}
+
+		/// <summary>
 		/// Creates a command that will insert all the given parameters into given table
 		/// </summary>
 		/// <param name="table">Sql table name (no brackets)</param>
