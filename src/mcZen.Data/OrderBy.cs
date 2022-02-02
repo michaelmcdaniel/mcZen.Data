@@ -11,7 +11,7 @@ namespace mcZen.Data
 	public class OrderBy
 	{
 		private static Regex s_IsFunction = new Regex("^\\s*(?'function'\\w+)\\((?'args'.*)\\)\\s*$", RegexOptions.Singleline);
-		private static Regex s_SortMatch = new Regex(@"(?:\s*(?'column'(?:\[(?>.*?\]))|(?:[^,]*?))(?:\s+(?'dir'DESC|ASC))?\s*)$", RegexOptions.Singleline);
+		private static Regex s_SortMatch = new Regex(@"(?:\s*(?'column'(?:.+?))(?:\s+(?'dir'DESC|ASC))?\s*)$", RegexOptions.Singleline);
 		private static Regex s_SQLParser = new Regex("\\s+ORDER\\s+BY\\s+(?'sort'[^;]*)$", RegexOptions.Singleline | RegexOptions.IgnoreCase);
 		public class Sort
 		{
@@ -140,7 +140,23 @@ namespace mcZen.Data
 
 			public static List<Sort> Split(string sort)
 			{
-				string[] splits = sort.Split(',');
+				//string[] splits = sort.Split(',');
+				List<string> splits = new List<string>();
+				int start = 0;
+				while (start +1 < sort.Length && sort[start] == ' ') start++;
+				int current = start;
+				for (; current < sort.Length; current++)
+				{
+					if (sort[current] == '[') { while (current < sort.Length && sort[current] != ']') { current++; } }
+					else if (sort[current] == '(') { while (current < sort.Length && sort[current] != ')') { current++; } }
+					else if (sort[current] == ',')
+					{
+						splits.Add(sort.Substring(start, current - start));
+						while (current+2 < sort.Length && sort[current+1] == ' ') current++;
+						start = current+1;
+					}
+				}
+				if (current > start) splits.Add(sort.Substring(start, current - start));
 				List<Sort> retVal = new List<Sort>();
 				foreach (string s in splits)
 				{
