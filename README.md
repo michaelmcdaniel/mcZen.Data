@@ -23,6 +23,8 @@ ConnectionFactory.Execute(
 ```ConnectionFactory factory = new ConnectionFactory(_options.Value.ConnectionString);
 factory.Register(mcZen.Data.Commands.Insert("[Table]", new SqlParameter("@key", Guid.NewGuid()), new SqlParameter("@value", 5)));
 factory.Register(mcZen.Data.Commands.Insert("[Table]", new SqlParameter("@key", Guid.NewGuid()), new SqlParameter("@value", 3)));
+factory.Register(mcZen.Data.Commands.Update("[Table]", new SqlParameter("@key", Guid.NewGuid()), new SqlParameter("@value", 4)));
 factory.Register(mcZen.Data.Command("UPDATE [TABLE] SET [timestamp]=getutcdate()"));
+factory.Register(mcZen.Data.Commands.Delete("[Table]", new SqlParameter("@key", Guid.NewGuid())));
 factory.Execute();'
 ```
