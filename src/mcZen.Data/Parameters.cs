@@ -62,7 +62,12 @@ namespace mcZen.Data
 			return new SqlParameter(column, guid);
 		}
 
-		public static SqlParameter Create<T>(string column, Nullable<T> value)
+		public static SqlParameter Create<T>(string column, T value) where T: struct
+		{
+            return new SqlParameter(column, value);
+        }
+
+        public static SqlParameter Create<T>(string column, Nullable<T> value)
 			where T : struct
 		{
 			if (!value.HasValue)
