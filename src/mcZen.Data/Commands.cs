@@ -54,7 +54,7 @@ namespace mcZen.Data
 		public static mcZen.Data.ICommand Update(string table, SqlParameter key, params SqlParameter[] parameters)
 		{
 			string query;
-			IEnumerable<SqlParameter> cc = parameters;
+			IEnumerable<SqlParameter> cc = parameters.Append(key);
 			query = string.Format("UPDATE [{0}] SET {1} WHERE {2}",
 				table,
 				string.Join(",", (from p in parameters select "[" + p.ParameterName.Substring(1) + "]=" + p.ParameterName)),
@@ -143,11 +143,10 @@ namespace mcZen.Data
 		public static mcZen.Data.ICommand InitializeSave(string table, ref Guid id, SqlParameter key, params SqlParameter[] parameters)
 		{
 			string query;
-			IEnumerable<SqlParameter> cc;
+			IEnumerable<SqlParameter> cc = parameters.Append(key);
 			if (id == Guid.Empty)
 			{
 				key.Value = (id = Guid.NewGuid());
-				cc = parameters;
 				query = string.Format("INSERT INTO [{0}] ([{1}]) VALUES ({2})",
 					table,
 					string.Join("],[", (from p in cc select p.ParameterName.Substring(1))),
@@ -155,7 +154,6 @@ namespace mcZen.Data
 			}
 			else
 			{
-				cc = parameters.Append(key);
 				query = string.Format("UPDATE [{0}] SET {1} WHERE {2}", 
 					table,
 					string.Join(",", (from p in parameters select "["+p.ParameterName.Substring(1)+"]="+p.ParameterName)), 
