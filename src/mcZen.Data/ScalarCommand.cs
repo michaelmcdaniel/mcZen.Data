@@ -31,8 +31,20 @@ namespace mcZen.Data
 			if (action != null) OnValue += action;
 		}
 
+		public ScalarCommand(Action<T> action, T defaultValue, string query, System.Data.CommandType commandType, params SqlParameter[] parameters)
+			: this(defaultValue, query, commandType, parameters)
+		{
+			if (action != null) OnValue += action;
+		}
+
 		public ScalarCommand(Action<T> action, string query, params SqlParameter[] parameters)
 			: this(query, parameters)
+		{
+			if (action != null) OnValue += action;
+		}
+
+		public ScalarCommand(Action<T> action, string query, System.Data.CommandType commandType, params SqlParameter[] parameters)
+			: this(query, commandType, parameters)
 		{
 			if (action != null) OnValue += action;
 		}
@@ -43,8 +55,26 @@ namespace mcZen.Data
 			_Obj = default(T);
 		}
 
+		public ScalarCommand(string query, System.Data.CommandType commandType, params SqlParameter[] parameters)
+			: base(query, commandType, parameters)
+		{
+			_Obj = default(T);
+		}
+
 		public ScalarCommand(T defaultValue, string query, params SqlParameter[] parameters)
 			: base(query, parameters)
+		{
+			_Obj = defaultValue;
+		}
+
+		public ScalarCommand(T defaultValue, string query, System.Data.CommandType commandType, params SqlParameter[] parameters)
+			: base(query, commandType, parameters)
+		{
+			_Obj = defaultValue;
+		}
+
+		public ScalarCommand(T defaultValue, string query, System.Data.CommandType commandType, TimeSpan timeout, params SqlParameter[] parameters)
+			: base(query, commandType, timeout, parameters)
 		{
 			_Obj = defaultValue;
 		}
