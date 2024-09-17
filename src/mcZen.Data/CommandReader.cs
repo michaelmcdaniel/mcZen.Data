@@ -17,6 +17,15 @@ namespace mcZen.Data
 		public CommandReader(string query, params SqlParameter[] parameters)
 			: base(query, parameters) { _ReadFunc = Read; }
 
+		public CommandReader(string query, CommandType type, params SqlParameter[] parameters)
+			: base(query, type, parameters) { _ReadFunc = Read; }
+
+		public CommandReader(string query, CommandType type, TimeSpan timeout, params SqlParameter[] parameters)
+			: base(query, type, timeout, parameters) { _ReadFunc = Read; }
+
+		public CommandReader(string query, CommandType type, int timeout, params SqlParameter[] parameters)
+			: base(query, type, timeout, parameters) { _ReadFunc = Read; }
+
 
 		/// <summary>
 		/// New Command that executes given sql and calls given function for each returned row.
@@ -26,6 +35,17 @@ namespace mcZen.Data
 		/// <param name="parameters">sql parameters to pass with query</param>
 		public CommandReader(Func<SqlDataReader, bool> func, string query, params SqlParameter[] parameters)
 			: base(query, parameters) { _ReadFunc = (r)=>Task.FromResult(func(r)); }
+
+		/// <summary>
+		/// New Command that executes given sql and calls given function for each returned row.
+		/// </summary>
+		/// <param name="func">Function to call for each row.  Return true to continue and false to stop processing.</param>
+		/// <param name="query">Sql query to run</param>
+		/// <param name="type">Type of query the command will run</param>
+		/// <param name="timeout">Timeout for the query to execute in.</param>
+		/// <param name="parameters">sql parameters to pass with query</param>
+		public CommandReader(Func<SqlDataReader, bool> func, string query, CommandType type, TimeSpan timeout, params SqlParameter[] parameters)
+			: base(query, type, timeout, parameters) { _ReadFunc = (r) => Task.FromResult(func(r)); }
 
 		/// <summary>
 		/// New Command that executes given sql and calls given function for each returned row.
@@ -46,6 +66,17 @@ namespace mcZen.Data
 		/// <param name="type">Type of query the command will run</param>
 		/// <param name="timeout">Timeout for the query to execute in.</param>
 		/// <param name="parameters">sql parameters to pass with query</param>
+		public CommandReader(Func<SqlDataReader, Task<bool>> func, string query, CommandType type, TimeSpan timeout, params SqlParameter[] parameters)
+			: base(query, type, timeout, parameters) { _ReadFunc = func; }
+
+		/// <summary>
+		/// New Command that executes given sql and asynchronously calls given function for each returned row.
+		/// </summary>
+		/// <param name="func">async function to call for each row.  Return true to continue and false to stop processing. Each call is awaited.</param>
+		/// <param name="query">Sql query to run</param>
+		/// <param name="type">Type of query the command will run</param>
+		/// <param name="timeout">Timeout for the query to execute in.</param>
+		/// <param name="parameters">sql parameters to pass with query</param>
 		public CommandReader(Func<SqlDataReader, Task<bool>> func, string query, CommandType type, int timeout, params SqlParameter[] parameters)
 			: base(query, type, timeout, parameters) { _ReadFunc = func; }
 
@@ -57,8 +88,30 @@ namespace mcZen.Data
 		/// <param name="type">Type of query the command will run</param>
 		/// <param name="timeout">Timeout for the query to execute in.</param>
 		/// <param name="parameters">sql parameters to pass with query</param>
+		public CommandReader(Action<SqlDataReader> action, string query, CommandType type, TimeSpan timeout, params SqlParameter[] parameters)
+			: base(query, type, timeout, parameters) { _ReadFunc = (a) => { action(a); return Task.FromResult(true); }; }
+
+		/// <summary>
+		/// New Command that executes given sql and calls given function for each returned row.
+		/// </summary>
+		/// <param name="action">Function to call for each row, until all rows are processed.</param>
+		/// <param name="query">Sql query to run</param>
+		/// <param name="type">Type of query the command will run</param>
+		/// <param name="timeout">Timeout for the query to execute in.</param>
+		/// <param name="parameters">sql parameters to pass with query</param>
 		public CommandReader(Action<SqlDataReader> action, string query, CommandType type, int timeout, params SqlParameter[] parameters)
 			: base(query, type, timeout, parameters) { _ReadFunc = (a) => { action(a); return Task.FromResult(true); }; }
+
+		/// <summary>
+		/// New Command that executes given sql and calls given function for each returned row.
+		/// </summary>
+		/// <param name="action">async function to call for each row until all rows are processed.</param>
+		/// <param name="query">Sql query to run</param>
+		/// <param name="type">Type of query the command will run</param>
+		/// <param name="timeout">Timeout for the query to execute in.</param>
+		/// <param name="parameters">sql parameters to pass with query</param>
+		public CommandReader(Func<SqlDataReader, Task> action, string query, CommandType type, TimeSpan timeout, params SqlParameter[] parameters)
+			: base(query, type, timeout, parameters) { _ReadFunc = async (a) => { await action(a); return true; }; }
 
 		/// <summary>
 		/// New Command that executes given sql and calls given function for each returned row.

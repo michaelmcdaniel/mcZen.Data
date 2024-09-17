@@ -31,6 +31,15 @@ namespace mcZen.Data
 				_Cmd.Parameters.AddRange(parameters);
 		}
 
+		public Command(string query, CommandType type, TimeSpan timeout, params SqlParameter[] parameters)
+		{
+			_Cmd = new SqlCommand(query);
+			_Cmd.CommandType = type;
+			_Cmd.CommandTimeout = (int)timeout.TotalSeconds;
+			if (parameters != null)
+				_Cmd.Parameters.AddRange(parameters);
+		}
+
 		public virtual void Initialize(SqlConnection conn, SqlTransaction trans)
 		{
 			_Cmd.Connection = conn;
